@@ -23,7 +23,7 @@ import {
   getCachedRunners,
 } from '../services/sheetService';
 import { getGlobalSupabaseConfig } from '../services/supabaseService';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Trophy } from 'lucide-react';
 
 const DEFAULT_CONFIG: CertificateConfig = {
   bgMode: 'custom',
@@ -105,6 +105,16 @@ export interface CertificateLookupProps {
    * Callback khi người dùng chọn một VĐV.
    */
   onSelectRunner?: (runner: Runner) => void;
+
+  /**
+   * Callback khi người dùng bấm quay lại hoặc chuyển sang trang Bảng xếp hạng Top 50
+   */
+  onNavigateToRanking?: () => void;
+
+  /**
+   * Có hiển thị nút chuyển sang trang Bảng xếp hạng Top 50 hay không
+   */
+  showRankingButton?: boolean;
 }
 
 export function CertificateLookup({
@@ -119,6 +129,8 @@ export function CertificateLookup({
   hideHeader = false,
   className = '',
   onSelectRunner,
+  onNavigateToRanking,
+  showRankingButton = true,
 }: CertificateLookupProps) {
   // Danh sách giải chạy
   const [allRaces, setAllRaces] = useState<Race[]>(() => customRaces || getLocalRaces());
@@ -522,13 +534,17 @@ export function CertificateLookup({
       onBack();
       return;
     }
+    if (onNavigateToRanking) {
+      onNavigateToRanking();
+      return;
+    }
     if (allowRaceSelection) {
       setIsHomeView(true);
       if (syncUrl && typeof window !== 'undefined') {
         window.history.pushState(null, '', '/');
       }
     }
-  }, [onBack, allowRaceSelection, syncUrl]);
+  }, [onBack, onNavigateToRanking, allowRaceSelection, syncUrl]);
 
   // Render Admin View
   if (enableAdmin && isAdminRoute) {
@@ -604,13 +620,26 @@ export function CertificateLookup({
                 title="Quay lại"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>{onBack ? 'Quay lại' : 'Chọn giải khác'}</span>
+                <span>{onBack ? 'Quay lại' : onNavigateToRanking ? 'Bảng xếp hạng' : 'Chọn giải khác'}</span>
               </button>
             ) : (
               <div />
             )}
 
             <div className="flex items-center gap-2">
+              {showRankingButton && onNavigateToRanking && (
+                <button
+                  type="button"
+                  onClick={onNavigateToRanking}
+                  className="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300/80 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Chuyển sang Bảng xếp hạng Top 50"
+                >
+                  <Trophy className="w-3.5 h-3.5 text-amber-600" />
+                  <span className="hidden sm:inline">Bảng xếp hạng Top 50</span>
+                  <span className="sm:hidden">Xếp hạng</span>
+                </button>
+              )}
+
               <span className="text-xs font-bold text-slate-800 line-clamp-1">
                 {activeRace.name}
               </span>

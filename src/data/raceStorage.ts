@@ -131,14 +131,34 @@ export function resolveRaceFromPath(pathStr: string, raceList: Race[] = getLocal
     if (found) return ensureRaceRunners(found);
   }
 
-  // 3. Kiểm tra pathname /ha-long-2026 hoặc /vnexpress-marathon-grand-tour-nghe-an-2026
+  // 3. Kiểm tra pathname /ha-long-2026 hoặc /vpbank-hanoi-international-marathon-2026/ranking hoặc /result
   const pathname = clean.split('?')[0].split('#')[0].replace(/^\/+|\/+$/g, '');
   if (pathname) {
+    const segments = pathname.split('/');
+    for (const seg of segments) {
+      if (seg === 'ranking' || seg === 'result' || seg === 'admin' || seg === 'api' || seg === 'home') continue;
+      const found = matchRace(seg);
+      if (found) return ensureRaceRunners(found);
+    }
     const found = matchRace(pathname);
     if (found) return ensureRaceRunners(found);
   }
 
   return ensureRaceRunners(raceList[0] || DEFAULT_RACE);
+}
+
+/**
+ * Phân tích trang con từ URL path: 'home' | 'admin' | 'ranking' | 'result'
+ */
+export function parseSubRouteFromPath(pathStr: string): 'home' | 'admin' | 'ranking' | 'result' {
+  if (!pathStr) return 'home';
+  const clean = pathStr.toLowerCase().split('?')[0].split('#')[0].replace(/^\/+|\/+$/g, '');
+  if (!clean || clean === 'home') return 'home';
+  if (clean.startsWith('admin')) return 'admin';
+  if (clean.endsWith('/result') || clean === 'result') return 'result';
+  if (clean.endsWith('/ranking') || clean === 'ranking') return 'ranking';
+  // Khi người dùng vào /race-slug trực tiếp, mặc định mở bảng xếp hạng ranking
+  return 'ranking';
 }
 
 /**

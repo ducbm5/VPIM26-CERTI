@@ -7,6 +7,7 @@ export { CertificateCanvas } from './components/CertificateCanvas';
 export { SearchRunner } from './components/SearchRunner';
 export { RunnerDetailsCard } from './components/RunnerDetailsCard';
 export { RaceSelectorHome } from './components/RaceSelectorHome';
+export { RaceRankingTop50 } from './components/RaceRankingTop50';
 export { AdminPlacementStudio } from './components/AdminPlacementStudio';
 export { PlacementEditorPanel } from './components/PlacementEditorPanel';
 export { RacePhotosSelector } from './components/RacePhotosSelector';
